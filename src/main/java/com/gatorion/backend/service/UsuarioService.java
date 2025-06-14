@@ -22,6 +22,7 @@ public class UsuarioService {
 
     public Usuario salvarUsuario(Usuario usuario) {
         String senhaCriptografada = passwordEncoder.encode(usuario.getSenha());
+
         usuario.setSenha(senhaCriptografada);
         // Verifica se o email já está cadastrado
         if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {

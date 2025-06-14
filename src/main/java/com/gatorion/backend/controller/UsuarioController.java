@@ -1,5 +1,7 @@
 package com.gatorion.backend.controller;
 
+import com.gatorion.backend.dto.UsuarioRequestDTO;
+import com.gatorion.backend.dto.UsuarioResponseDTO;
 import com.gatorion.backend.model.Usuario;
 import com.gatorion.backend.service.UserNotFoundException;
 import com.gatorion.backend.service.UsuarioService;
@@ -27,10 +29,17 @@ public class UsuarioController {
     }
 
     @PostMapping("/cadastrar")
-    public ResponseEntity<Usuario> cadastrar(@RequestBody @Valid Usuario usuario) {
-        Usuario salvo = usuarioService.salvarUsuario(usuario);
-        return ResponseEntity.status(201).body(salvo);
+    public ResponseEntity<Usuario> cadastrar(@RequestBody @Valid UsuarioRequestDTO dto) {
+        Usuario usuario = new Usuario();
+        usuario.setNome(dto.getNome());
+        usuario.setEmail(dto.getEmail());
+        usuario.setSenha(dto.getSenha());
+
+        Usuario novoUsuario = usuarioService.salvarUsuario(usuario);
+        UsuarioResponseDTO response = new UsuarioResponseDTO(novoUsuario.getId(), novoUsuario.getNome(), novoUsuario.getEmail());
+        return ResponseEntity.status(HttpStatus.CREATED).body(novoUsuario);
     }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<Usuario> atualizar(
@@ -41,7 +50,6 @@ public class UsuarioController {
         if (usuarioExistente == null) {
             return ResponseEntity.notFound().build();
         }
-
         // Atualizar campos se fornecidos
         if (usuarioAtualizado.getNome() != null) {
             usuarioExistente.setNome(usuarioAtualizado.getNome());
