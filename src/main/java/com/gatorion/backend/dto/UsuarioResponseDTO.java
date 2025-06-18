@@ -1,8 +1,8 @@
 package com.gatorion.backend.dto;
+
 import jakarta.validation.constraints.Email;
 import lombok.Getter;
 import lombok.Setter;
-
 
 
 @Getter
@@ -18,5 +18,4 @@ public class UsuarioResponseDTO {
         this.nome = nome;
         this.email = email;
     }
-
 }

@@ -1,6 +1,5 @@
 package com.gatorion.backend.dto;
 
-
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -22,4 +21,5 @@ public class UsuarioRequestDTO {
     @Size(min = 8, message = "A senha deve ter pelo menos 8 caracteres")
     @Column(length = 60) // Para armazenar senhas criptografadas
     private String senha;
+
 }

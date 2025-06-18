@@ -1,5 +1,7 @@
 package com.gatorion.backend.service;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import com.gatorion.backend.dto.AuthRequestDTO;
 import com.gatorion.backend.dto.AuthResponseDTO;
 import com.gatorion.backend.model.Usuario;

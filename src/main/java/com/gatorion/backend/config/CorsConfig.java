@@ -13,9 +13,10 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://127.0.0.1:5500/") // libera geral, inclusive para arquivo local
+                        .allowedOrigins("*") // libera geral, inclusive para arquivo local
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowedHeaders("*");
+                        .allowedHeaders("*"); // permite todos os cabeçalhos
+
             }
         };
     }
