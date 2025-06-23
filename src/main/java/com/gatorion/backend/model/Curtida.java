@@ -2,11 +2,12 @@ package com.gatorion.backend.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
+import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
 @Data
+@NoArgsConstructor // Construtor sem argumentos para o JPA
 @Table(name = "Curtida")
 public class Curtida {
 
@@ -14,19 +15,31 @@ public class Curtida {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //curtida é ligada ao usuario que curtiu
-    @ManyToOne
-    @JoinColumn(name = "id_usuario", nullable = false)
+
+    // A chave para sabermos QUEM curtiu
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
-    //curtida é ligada ao post curtido
-    @ManyToOne
-    @JoinColumn(name = "id_post", nullable = false)
+    // A chave para sabermos O QUE foi curtido
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
+    // Um bônus: saber QUANDO foi curtido
+    // Normalmente nós usuários não sabemos as datas das curtidas,
+    // mas é melhor deixarmos por questão de segurança
     @Column(name = "dataCurtida", nullable = false)
     private LocalDateTime dataCurtida;
 
-    @PrePersist //salva a data automaticamente quando cria o post
-    protected void onCreate() {this.dataCurtida = LocalDateTime.now();}
+    @PrePersist
+    protected void onCreate() {
+        this.dataCurtida = LocalDateTime.now();
+    }
+
+    // Construtor customizado para facilitar a criação
+    public Curtida(Usuario usuario, Post post) {
+        this.usuario = usuario;
+        this.post = post;
+    }
 }

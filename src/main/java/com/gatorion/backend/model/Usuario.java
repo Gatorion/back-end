@@ -20,15 +20,23 @@ public class Usuario {
     @Column(name = "email", nullable = false, unique = true, length = 100)
     private String email;
 
-    @Column(name = "senha", nullable = false, length = 60)// Para armazenar senhas criptografadas
+    @Column(name = "senha", nullable = false, length = 60) // Para armazenar senhas criptografadas
     private String senha;
 
-    @Column(name = "dataCriacao", nullable = false)
+    @Column(name == "username", unique = true)
+    private String nomeUsuario;
+  
+    @Column(name = "data_criacao", nullable = false)
     private LocalDateTime dataCriacao;
 
+    @Column(name = "bio", columnDefinition = "TEXT")
+    private String bio;
+  
     @Column(name = "endereco", nullable = true)
     private String endereco;
-
-    @PrePersist //salva a data automaticamente quando cria o post
-    protected void onCreate() {this.dataCriacao = LocalDateTime.now();}
+    
+    @Column(name = "experiencia")
+    private long xp;
+    @Column(name = "experiencia")
+    private int nivel;
 }
