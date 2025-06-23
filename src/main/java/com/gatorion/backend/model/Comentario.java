@@ -9,8 +9,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
-@Table(name = "Post")
-public class Post {
+@Table(name = "Comentario")
+public class Comentario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,19 +19,20 @@ public class Post {
     @Column(name = "conteudo", length = 300, nullable = false)
     private String conteudo;
 
-    @Lob
-    @Column(name = "imagem")
-    private byte[] imagem;
+    @Column(name = "dataComentario", nullable = false)
+    private LocalDateTime dataComentario;
 
-    @Column(name = "dataCriacao", nullable = false)
-    private LocalDateTime dataCriacao;
+    @PrePersist //salva a data automaticamente quando cria o post
+    protected void onCreate() {this.dataComentario = LocalDateTime.now();}
 
-    //Conecta o id co usuario ao post criado por ele
+    //comentario ligado ao usuario que fez comentario
     @ManyToOne
     @JoinColumn(name = "id_autor", nullable = false)
     private Usuario autor;
 
-    @PrePersist //salva a data automaticamente quando cria o post
-    protected void onCreate() {this.dataCriacao = LocalDateTime.now();}
+    //comentario ligado ao post que foi comentado
+    @ManyToOne
+    @JoinColumn(name = "id_post", nullable = false)
+    private Post post;
 
 }

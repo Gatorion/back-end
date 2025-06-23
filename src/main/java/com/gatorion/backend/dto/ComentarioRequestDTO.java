@@ -1,21 +1,21 @@
 package com.gatorion.backend.dto;
 
-import com.gatorion.backend.model.Usuario;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
 
 import java.time.LocalDateTime;
 
-@Data
-public class PostRequestDTO {
+public class ComentarioRequestDTO {
 
-    @NotNull(message = "O ID do autor não pode estar vazio")
+    @NotNull(message = "O ID do Post não pode estar vazio")
+    private Long idPost;
+
+    @NotNull(message = "O ID do Autor não pode estar vazio")
     private Long idAutor;
 
-    //conteudo escrito limitado para um post
+    //criterios para comentar iguais a postagem
     @NotBlank(message = "Conteudo não pode ser vazio")
     @Size(max = 300, message = "Limite de caracteres ultrapassado")
     private String conteudo;
