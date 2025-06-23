@@ -1,9 +1,7 @@
 package com.gatorion.backend.dto;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotNull;
 
-import java.time.LocalDateTime;
 
 public class CurtidaRequestDTO {
 

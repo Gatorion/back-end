@@ -1,13 +1,9 @@
 package com.gatorion.backend.dto;
 
-import com.gatorion.backend.model.Usuario;
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-
-import java.time.LocalDateTime;
 
 @Data
 public class PostRequestDTO {

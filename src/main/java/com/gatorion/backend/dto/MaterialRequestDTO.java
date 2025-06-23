@@ -1,6 +1,5 @@
 package com.gatorion.backend.dto;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotNull;
 
 public class MaterialRequestDTO {
