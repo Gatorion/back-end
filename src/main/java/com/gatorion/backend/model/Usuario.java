@@ -3,26 +3,40 @@ package com.gatorion.backend.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Data
+@Table(name = "Usuario")
 public class Usuario {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "nome", nullable = false, length = 60)
     private String nome;
 
-    @Column(unique = true)
+    @Column(name = "email", nullable = false, unique = true, length = 100)
     private String email;
 
-    @Column(length = 60) // Para armazenar senhas criptografadas
+    @Column(name = "senha", nullable = false, length = 60) // Para armazenar senhas criptografadas
     private String senha;
 
-    @Column(unique = true)
+    @Column(name == "username", unique = true)
     private String nomeUsuario;
+  
+    @Column(name = "data_criacao", nullable = false)
+    private LocalDateTime dataCriacao;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "bio", columnDefinition = "TEXT")
     private String bio;
-
+  
+    @Column(name = "endereco", nullable = true)
+    private String endereco;
+    
+    @Column(name = "experiencia")
     private long xp;
+    @Column(name = "experiencia")
     private int nivel;
 }
