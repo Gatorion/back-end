@@ -24,6 +24,6 @@ public class AuthService {
             throw new RuntimeException("Suas credenciais estão incorretas");
         }
         
-        return new AuthResponseDTO(usuario.getId(), usuario.getNome(), usuario.getEmail());
+        return new AuthResponseDTO(usuario.getId(), usuario.getNome(), usuario.getEmail(), usuario.getNomeUsuario(), usuario.getXp(), usuario.getNivel());
     }
 }
