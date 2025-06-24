@@ -1,13 +1,16 @@
 package com.gatorion.backend.service;
 
+import com.gatorion.backend.dto.PerfilUpdateRequestDTO;
 import com.gatorion.backend.model.Usuario;
 import com.gatorion.backend.repository.UsuarioRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Classe de serviço para gerenciar as operações de negócio relacionadas a Usuários.
@@ -91,13 +94,28 @@ public class UsuarioService {
         usuario.setNome(dadosParaAtualizar.getNome());
         usuario.setEmail(dadosParaAtualizar.getEmail());
 
-        // 4. **IMPLEMENTAÇÃO PRINCIPAL**: Atualiza a senha somente se uma nova senha for fornecida.
+        // 4. **IMPLEMENTAÇÃO PRINCIPAL**: atualiza a senha somente se uma nova senha for fornecida.
         //    Isso evita que a senha seja apagada acidentalmente durante a atualização de outros campos.
         if (dadosParaAtualizar.getSenha() != null && !dadosParaAtualizar.getSenha().trim().isEmpty()) {
             usuario.setSenha(passwordEncoder.encode(dadosParaAtualizar.getSenha()));
         }
 
         // 5. Salva as alterações no banco de dados.
+        return usuarioRepository.save(usuario);
+    }
+
+    // A assinatura do método recebe MultipartFile
+    public Usuario atualizarPerfil(Long id, String nome, String bio, MultipartFile avatarFile, MultipartFile bannerFile) throws IOException, IOException {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado para o ID: " + id));
+
+        usuario.setNome(nome);
+        usuario.setBio(bio);
+
+        // Você extrai os bytes aqui dentro do service, o que também está perfeito!
+        if (avatarFile != null && !avatarFile.isEmpty()) usuario.setAvatar(avatarFile.getBytes()); // Corrigido!
+        if (bannerFile != null && !bannerFile.isEmpty()) usuario.setBanner(bannerFile.getBytes()); // Corrigido!
+
         return usuarioRepository.save(usuario);
     }
 
@@ -134,5 +152,32 @@ public class UsuarioService {
             throw new RuntimeException("Usuário não encontrado");
         }
         usuarioRepository.deleteById(id);
+    }
+
+    @Transactional
+    public Usuario adicionarXp(Long usuarioId, long xpGanha) {
+        // 1. Busca o usuário
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com o ID: " + usuarioId));
+
+        // 2. Define a lógica de nível (ex: 1000 XP para cada nível)
+        int xpParaProximoNivel = 1000;
+        long xpAtual = usuario.getXp();
+        int nivelAtual = usuario.getNivel();
+
+        // 3. Adiciona o novo XP
+        long novoXpTotal = xpAtual + xpGanha;
+
+        // 4. Calcula o novo nível e o XP restante
+        int novosNiveisGanhos = (int) (novoXpTotal / xpParaProximoNivel);
+        long xpRestante = novoXpTotal % xpParaProximoNivel;
+        int novoNivel = nivelAtual + novosNiveisGanhos;
+
+        // 5. Atualiza o usuário
+        usuario.setNivel(novoNivel);
+        usuario.setXp(xpRestante);
+
+        // 6. Salva e retorna o usuário atualizado
+        return usuarioRepository.save(usuario);
     }
 }

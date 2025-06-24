@@ -23,20 +23,29 @@ public class Usuario {
     @Column(name = "senha", nullable = false, length = 60) // Para armazenar senhas criptografadas
     private String senha;
 
-    @Column(name == "username", unique = true)
+    @Column(name = "username", unique = true)
     private String nomeUsuario;
-  
+
     @Column(name = "data_criacao", nullable = false)
     private LocalDateTime dataCriacao;
 
     @Column(name = "bio", columnDefinition = "TEXT")
     private String bio;
-  
+
+    @Lob
+    @Column(columnDefinition = "LONGBLOB") // Especifica o tipo para o MySQL
+    private byte[] avatar;
+
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] banner;
+
+
     @Column(name = "endereco", nullable = true)
     private String endereco;
-    
+
     @Column(name = "experiencia")
     private long xp;
     @Column(name = "experiencia")
-    private int nivel;
+    private int nivel = 1;
 }
