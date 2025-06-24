@@ -2,6 +2,7 @@ package com.gatorion.backend.controller;
 
 import com.gatorion.backend.dto.UsuarioRequestDTO;
 import com.gatorion.backend.dto.UsuarioResponseDTO;
+import com.gatorion.backend.dto.XpRequestDTO;
 import com.gatorion.backend.model.Usuario;
 import com.gatorion.backend.service.UsuarioService;
 import jakarta.validation.Valid;
@@ -156,5 +157,25 @@ public class UsuarioController {
             //    O ideal é criar uma exceção customizada (ex: RecursoNaoEncontradoException).
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erro.getMessage());
         }
+    }
+
+    @PostMapping("/{id}/add-xp")
+    public ResponseEntity<UsuarioResponseDTO> adicionarXp(
+            @PathVariable Long id,
+            @RequestBody XpRequestDTO xpRequest) { // Usamos um DTO para receber o XP
+
+        Usuario usuarioAtualizado = usuarioService.adicionarXp(id, xpRequest.getXp());
+
+        // Criamos uma resposta DTO para enviar ao frontend
+        UsuarioResponseDTO response = new UsuarioResponseDTO(
+                usuarioAtualizado.getId(),
+                usuarioAtualizado.getNome(),
+                usuarioAtualizado.getEmail(),
+                usuarioAtualizado.getNomeUsuario(),
+                usuarioAtualizado.getXp(),
+                usuarioAtualizado.getNivel()
+        );
+
+        return ResponseEntity.ok(response);
     }
 }

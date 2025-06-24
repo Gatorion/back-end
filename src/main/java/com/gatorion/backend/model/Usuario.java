@@ -23,6 +23,14 @@ public class Usuario {
     @Column(columnDefinition = "TEXT")
     private String bio;
 
+    @Lob
+    @Column(columnDefinition = "LONGBLOB") // Especifica o tipo para o MySQL
+    private byte[] avatar;
+
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] banner;
+
     private long xp;
-    private int nivel;
+    private int nivel = 1;
 }
