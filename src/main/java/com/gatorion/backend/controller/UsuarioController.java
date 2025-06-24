@@ -1,5 +1,7 @@
 package com.gatorion.backend.controller;
 
+import com.gatorion.backend.dto.SeguidorRequestDTO;
+import com.gatorion.backend.dto.SeguidorResponseDTO;
 import com.gatorion.backend.dto.UsuarioRequestDTO;
 import com.gatorion.backend.dto.UsuarioResponseDTO;
 import com.gatorion.backend.model.Usuario;
@@ -156,5 +158,15 @@ public class UsuarioController {
             //    O ideal é criar uma exceção customizada (ex: RecursoNaoEncontradoException).
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erro.getMessage());
         }
+    }
+
+    @PostMapping("/{nomeInfluencer}/seguir/{nomeSeguidor}")
+    public ResponseEntity<SeguidorResponseDTO> seguirOuDeixarDeSeguir(
+            @PathVariable String nomeInfluencer,
+            @PathVariable String nomeSeguidor) {
+        SeguidorRequestDTO requisicao = new SeguidorRequestDTO(nomeInfluencer, nomeSeguidor);
+
+        SeguidorResponseDTO nomesDosSeguidores = usuarioService.adicionarSeguidor(requisicao.getInfluecer(), requisicao.getSeguidor());
+        return ResponseEntity.ok(nomesDosSeguidores);
     }
 }
