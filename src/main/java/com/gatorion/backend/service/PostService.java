@@ -5,12 +5,13 @@ import com.gatorion.backend.dto.PostResponseDTO;
 import com.gatorion.backend.model.Curtida;
 import com.gatorion.backend.model.Post;
 import com.gatorion.backend.model.Usuario;
+import com.gatorion.backend.repository.ComentarioRepository;
+import com.gatorion.backend.repository.CurtidaRepository;
 import com.gatorion.backend.repository.PostRepository;
 import com.gatorion.backend.repository.UsuarioRepository;
-import com.gatorion.backend.repository.CurtidaRepository;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,12 +22,15 @@ public class PostService {
     private final PostRepository postRepository;
     private final UsuarioRepository usuarioRepository;
     private final CurtidaRepository curtidaRepository;
+    private final ComentarioRepository comentarioRepository;
+
 
     @Autowired
-    public PostService(PostRepository postRepository, UsuarioRepository usuarioRepository, CurtidaRepository curtidaRepository) {
+    public PostService(PostRepository postRepository, UsuarioRepository usuarioRepository, CurtidaRepository curtidaRepository, ComentarioRepository comentarioRepository) {
         this.postRepository = postRepository;
         this.usuarioRepository = usuarioRepository;
         this.curtidaRepository = curtidaRepository;
+        this.comentarioRepository = comentarioRepository;
     }
 
     @Transactional
@@ -45,37 +49,38 @@ public class PostService {
                 postSalvo.getConteudo(),
                 postSalvo.getDataCriacao(),
                 postSalvo.getAutor().getId(),
-                postSalvo.getAutor().getNome(),
-                0L, // Total de curtidas para um post novo é sempre 0
-                false // O autor não curtiu o post automaticamente
+                postSalvo.getAutor().getNomeUsuario(),
+                0L,      // Total de curtidas para um post novo é 0
+                false,   // O autor não curtiu o post automaticamente
+                0L       // Total de comentários para um post novo é sempre 0
         );
     }
 
     @Transactional(readOnly = true)
-    public List<PostResponseDTO> listarPosts(Long usuarioLogadoId) {
-        List<Post> posts = postRepository.findAllByOrderByDataCriacaoDesc();
+    public List<PostResponseDTO> listarPosts(Long usuarioLogadoId) { // O nome do seu método pode ser listarTodos
 
-        // Se o usuário não estiver logad (ID nulo), não podemos checar as curtidas que ele tem
-        // Criamos um objeto Usuario temporário para evitar erros, ou podemos passar nulo
-        // Por enquanto, como focamos no MVP, vamos assumir que ele sempre vai estar logado
+        List<Post> posts = postRepository.findAllByOrderByDataCriacaoDesc();
         Usuario usuarioLogado = usuarioRepository.findById(usuarioLogadoId)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new RuntimeException("Usuário logado não encontrado"));
 
         return posts.stream()
                 .map(post -> {
-                    // 2. Para cada post, calculamos os novos dados
                     long contagemCurtidas = curtidaRepository.countByPost(post);
                     boolean usuarioCurtiu = curtidaRepository.findByUsuarioAndPost(usuarioLogado, post).isPresent();
 
-                    // 3. Criamos o DTO com os novos campos
+                    // 1. Para cada post, calculamos o total de comentários
+                    long contagemComentarios = comentarioRepository.countByPost(post);
+
+                    // 2. Criamos o DTO com o novo campo
                     return new PostResponseDTO(
                             post.getId(),
                             post.getConteudo(),
                             post.getDataCriacao(),
                             post.getAutor().getId(),
-                            post.getAutor().getNome(),
+                            post.getAutor().getNomeUsuario(),
                             contagemCurtidas,
-                            usuarioCurtiu
+                            usuarioCurtiu,
+                            contagemComentarios // Passando o total de comentários
                     );
                 })
                 .collect(Collectors.toList());

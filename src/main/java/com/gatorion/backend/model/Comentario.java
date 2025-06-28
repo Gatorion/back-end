@@ -1,36 +1,49 @@
 package com.gatorion.backend.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Data
-@Table(name = "Comentario")
+@NoArgsConstructor // Construtor sem argumentos que o JPA precisa
 public class Comentario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "conteudo", length = 300, nullable = false)
+    @NotBlank(message = "O texto do comentário não pode estar vazio.")
+    @Column(columnDefinition = "TEXT")
     private String conteudo;
 
-    @Column(name = "dataComentario", nullable = false)
-    private LocalDateTime dataComentario;
-
-    @PrePersist //salva a data automaticamente quando cria o post
-    protected void onCreate() {this.dataComentario = LocalDateTime.now();}
-
-    //comentario ligado ao usuario que fez comentario
-    @ManyToOne
-    @JoinColumn(name = "id_autor", nullable = false)
+    // Relacionamento com o autor do comentário
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario autor;
 
-    //comentario ligado ao post que foi comentado
-    @ManyToOne
-    @JoinColumn(name = "id_post", nullable = false)
+    // Relacionamento com o post que foi comentado
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
+    // Um comentário pode ter um "pai" (se for uma resposta)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "comentario_pai_id") // Nova coluna no banco
+    private Comentario comentarioPai;
+
+    // Um comentário pode ter uma lista de "filhos" (suas respostas)
+    @OneToMany(mappedBy = "comentarioPai")
+    private List<Comentario> respostas;
+
+    private LocalDateTime dataCriacao;
+
+    @PrePersist
+    protected void onCreate() {
+        this.dataCriacao = LocalDateTime.now();
+    }
 }

@@ -29,6 +29,11 @@ public class Usuario {
     @Column(name = "data_criacao", nullable = false)
     private LocalDateTime dataCriacao;
 
+    @PrePersist
+    protected void onCreate() {
+        this.dataCriacao = LocalDateTime.now();
+    }
+
     @Column(name = "bio", columnDefinition = "TEXT")
     private String bio;
 
@@ -44,8 +49,7 @@ public class Usuario {
     @Column(name = "endereco", nullable = true)
     private String endereco;
 
-    @Column(name = "experiencia")
     private long xp;
-    @Column(name = "experiencia")
+    @Column(name = "nivel")
     private int nivel = 1;
 }
