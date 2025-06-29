@@ -1,5 +1,6 @@
 package com.gatorion.backend.service;
 
+import com.gatorion.backend.dto.SeguidorResponseDTO;
 import com.gatorion.backend.model.Usuario;
 import com.gatorion.backend.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,11 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
-import com.gatorion.backend.dto.SeguidorResponseDTO;
-
 import java.util.stream.Collectors;
-
 /**
  * Classe de serviço para gerenciar as operações de negócio relacionadas a Usuários.
  * Contém a lógica para criar, ler, atualizar e deletar (CRUD) usuários.
@@ -175,4 +172,8 @@ public class UsuarioService {
 
         return seguidorResponseDTO;
     }
+
+
+
+
 }

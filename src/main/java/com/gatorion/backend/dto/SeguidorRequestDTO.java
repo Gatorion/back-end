@@ -8,10 +8,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class SeguidorRequestDTO {
-    @Pattern(regexp = "^[a-zA-Z0-9]+(?:[.][a-zA-Z0-9]+)*$",
+    @Pattern(regexp = "^[a-zA-Z0-9]+(?:[._][a-zA-Z0-9]+)*$",
             message = "O nome de usuário não pode conter espaços ou caracteres especiais")
     private String influecer;
-    @Pattern(regexp = "^[a-zA-Z0-9]+(?:[.][a-zA-Z0-9]+)*$",
+    @Pattern(regexp = "^[a-zA-Z0-9]+(?:[._][a-zA-Z0-9]+)*$",
             message = "O nome de usuário não pode conter espaços ou caracteres especiais")
     private String seguidor;
 }
