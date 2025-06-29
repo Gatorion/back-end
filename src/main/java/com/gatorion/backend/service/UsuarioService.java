@@ -5,9 +5,13 @@ import com.gatorion.backend.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
+
+import com.gatorion.backend.dto.SeguidorResponseDTO;
+
+import java.util.stream.Collectors;
 
 /**
  * Classe de serviço para gerenciar as operações de negócio relacionadas a Usuários.
@@ -89,6 +93,7 @@ public class UsuarioService {
 
         // 3. Atualiza os campos do usuário com os novos dados.
         usuario.setNome(dadosParaAtualizar.getNome());
+        usuario.setNomeUsuario(dadosParaAtualizar.getNomeUsuario());
         usuario.setEmail(dadosParaAtualizar.getEmail());
 
         // 4. **IMPLEMENTAÇÃO PRINCIPAL**: Atualiza a senha somente se uma nova senha for fornecida.
@@ -134,5 +139,40 @@ public class UsuarioService {
             throw new RuntimeException("Usuário não encontrado");
         }
         usuarioRepository.deleteById(id);
+    }
+
+    @Transactional
+    public SeguidorResponseDTO adicionarSeguidor(String nomeInfluencer, String nomeSeguidor) { // pegar pelo nome no bd
+
+        if(nomeInfluencer.equals(nomeSeguidor)) throw new IllegalArgumentException("Um usuário não pode se seguir");
+        //pelo nome a gente encontra o seguidor e quem está sendo seguido
+        Usuario influencer = usuarioRepository.findByNomeUsuario(nomeInfluencer)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        Usuario seguidor = usuarioRepository.findByNomeUsuario(nomeSeguidor)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        boolean aindaNaoSegue = !influencer.getSeguidores().contains(seguidor);
+
+        List<Usuario> seguidores = influencer.getSeguidores();//quem segue ele
+        List<Usuario> seguindo = influencer.getSeguindo();//ele segue
+
+        if(aindaNaoSegue) {
+            seguidores.add(seguidor);//começa a seguir
+        } else {
+            seguidores.remove(seguidor);//deixa de seguir
+        }
+        usuarioRepository.save(influencer);
+
+        SeguidorResponseDTO seguidorResponseDTO = new SeguidorResponseDTO();
+        seguidorResponseDTO.setSeguidores( seguidores.stream()
+                .map(Usuario::getNomeUsuario)
+                .collect(Collectors.toList()));
+
+        seguidorResponseDTO.setSeguindo( seguindo.stream()
+                .map(Usuario::getNomeUsuario)
+                .collect(Collectors.toList()));
+
+        return seguidorResponseDTO;
     }
 }
