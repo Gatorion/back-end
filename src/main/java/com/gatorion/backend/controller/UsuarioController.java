@@ -1,7 +1,6 @@
 package com.gatorion.backend.controller;
 
-import com.gatorion.backend.dto.UsuarioRequestDTO;
-import com.gatorion.backend.dto.UsuarioResponseDTO;
+import com.gatorion.backend.dto.*;
 import com.gatorion.backend.model.Usuario;
 import com.gatorion.backend.service.UsuarioService;
 import jakarta.validation.Valid;
@@ -75,7 +74,7 @@ public class UsuarioController {
         usuarioParaSalvar.setNomeUsuario(dto.getNomeUsuario());
         usuarioParaSalvar.setEmail(dto.getEmail());
         usuarioParaSalvar.setSenha(dto.getSenha());
-        usuarioParaSalvar.setXp(0);
+        usuarioParaSalvar.setXp(0L);
         usuarioParaSalvar.setNivel(1);
 
         // 2. Chama o serviço para salvar o novo usuário no banco de dados (a senha será criptografada lá).
@@ -156,5 +155,34 @@ public class UsuarioController {
             //    O ideal é criar uma exceção customizada (ex: RecursoNaoEncontradoException).
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erro.getMessage());
         }
+    }
+
+    @PostMapping("/{id}/add-xp")
+    public ResponseEntity<UsuarioResponseDTO> adicionarXp(
+            @PathVariable Long id,
+            @RequestBody XpRequestDTO xpRequest) { // Usamos um DTO para receber o XP
+
+        Usuario usuarioAtualizado = usuarioService.adicionarXp(id, xpRequest.getXp());
+
+        // Criamos uma resposta DTO para enviar ao frontend
+        UsuarioResponseDTO response = new UsuarioResponseDTO(
+                usuarioAtualizado.getId(),
+                usuarioAtualizado.getNome(),
+                usuarioAtualizado.getEmail(),
+                usuarioAtualizado.getNomeUsuario(),
+                usuarioAtualizado.getXp(),
+                usuarioAtualizado.getNivel()
+        );
+
+        return ResponseEntity.ok(response);
+    }                   //quem vai ser seguido / seguir / seguidor
+    @PostMapping("/{nomeInfluencer}/seguir/{nomeSeguidor}")
+    public ResponseEntity<SeguidorResponseDTO> seguirOuDeixarDeSeguir(
+            @PathVariable String nomeInfluencer,
+            @PathVariable String nomeSeguidor) {
+        SeguidorRequestDTO requisicao = new SeguidorRequestDTO(nomeInfluencer, nomeSeguidor);
+
+        SeguidorResponseDTO nomesDosSeguidores = usuarioService.adicionarSeguidor(requisicao.getInfluecer(), requisicao.getSeguidor());
+        return ResponseEntity.ok(nomesDosSeguidores);
     }
 }

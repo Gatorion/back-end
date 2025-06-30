@@ -15,5 +15,6 @@ public class PostResponseDTO {
     private String nomeAutor;
     private long totalCurtidas;
     private boolean curtidoPeloUsuario; // Retorna true se o usuário logado curtiu, e false senão
+    private long totalComentarios;
 
 }
