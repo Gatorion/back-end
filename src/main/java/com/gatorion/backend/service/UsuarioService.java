@@ -1,6 +1,7 @@
 package com.gatorion.backend.service;
 
 import com.gatorion.backend.dto.PerfilUpdateRequestDTO;
+import com.gatorion.backend.dto.SeguidorResponseDTO;
 import com.gatorion.backend.model.Usuario;
 import com.gatorion.backend.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
@@ -11,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Classe de serviço para gerenciar as operações de negócio relacionadas a Usuários.
@@ -179,5 +181,39 @@ public class UsuarioService {
 
         // 6. Salva e retorna o usuário atualizado
         return usuarioRepository.save(usuario);
+    }
+    @Transactional
+    public SeguidorResponseDTO adicionarSeguidor(String nomeInfluencer, String nomeSeguidor) { // pegar pelo nome no bd
+
+        if(nomeInfluencer.equals(nomeSeguidor)) throw new IllegalArgumentException("Um usuário não pode se seguir");
+        // pelo nome a gente encontra o seguidor e quem está sendo seguido
+        Usuario influencer = usuarioRepository.findByNomeUsuario(nomeInfluencer)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        Usuario seguidor = usuarioRepository.findByNomeUsuario(nomeSeguidor)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        boolean aindaNaoSegue = !influencer.getSeguidores().contains(seguidor);
+
+        List<Usuario> seguidores = influencer.getSeguidores();//quem segue ele
+        List<Usuario> seguindo = influencer.getSeguindo();//ele segue
+
+        if(aindaNaoSegue) {
+            seguidores.add(seguidor);//começa a seguir
+        } else {
+            seguidores.remove(seguidor);//deixa de seguir
+        }
+        usuarioRepository.save(influencer);
+
+        SeguidorResponseDTO seguidorResponseDTO = new SeguidorResponseDTO();
+        seguidorResponseDTO.setSeguidores( seguidores.stream()
+                .map(Usuario::getNomeUsuario)
+                .collect(Collectors.toList()));
+
+        seguidorResponseDTO.setSeguindo( seguindo.stream()
+                .map(Usuario::getNomeUsuario)
+                .collect(Collectors.toList()));
+
+        return seguidorResponseDTO;
     }
 }

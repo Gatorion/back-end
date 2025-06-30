@@ -93,6 +93,8 @@ public class PostService {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado com o ID: " + usuarioId));
 
+        System.out.println(usuarioId);
+
         // Se a curtida já estiver presente, retorna 'false'
         if (curtidaRepository.findByUsuarioAndPost(usuario, post).isPresent()) {
             return false;

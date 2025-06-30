@@ -37,6 +37,8 @@ public class JwtService {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", usuario.getId());
         claims.put("username", usuario.getNomeUsuario());
+        claims.put("nome", usuario.getNome());
+        claims.put("email", usuario.getEmail());
         // Podemos adicionar mais claims aqui no futuro
         // Lembrando que "claims" são informações correspondentes ao usuário
         // que ficam guardadas no token, como o seu nome e cargo ficam "guardados" no seu crachá
@@ -82,5 +84,15 @@ public class JwtService {
     private SecretKey getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    public String extractUserId(String token) {
+        Claims claims = extractAllClaims(token);
+        return claims.get("userId", String.class);
+    }
+
+    public Integer extractUserIdAsInteger(String token) {
+        Claims claims = extractAllClaims(token);
+        return claims.get("userId", Integer.class); // ✅ Extrair como Integer, não String
     }
 }
