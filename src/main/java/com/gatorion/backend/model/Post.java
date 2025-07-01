@@ -2,6 +2,7 @@ package com.gatorion.backend.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -21,15 +22,11 @@ public class Post {
     @Column(name = "imagem")
     private byte[] imagem;
 
-    @Column(name = "dataCriacao", nullable = false)
-    private LocalDateTime dataCriacao;
+    @Column(name = "data_criacao") // ← Mudado de data_postagem
+    @CreationTimestamp
+    private LocalDateTime dataCriacao; // ← Mudado de dataPostagem
 
-    //Conecta o id co usuario ao post criado por ele
     @ManyToOne
     @JoinColumn(name = "id_autor", nullable = false)
     private Usuario autor;
-
-    @PrePersist //salva a data automaticamente quando cria o post
-    protected void onCreate() {this.dataCriacao = LocalDateTime.now();}
-
 }

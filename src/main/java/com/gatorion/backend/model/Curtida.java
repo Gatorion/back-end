@@ -3,6 +3,8 @@ package com.gatorion.backend.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -29,13 +31,9 @@ public class Curtida {
     // Um bônus: saber QUANDO foi curtido
     // Normalmente nós usuários não sabemos as datas das curtidas,
     // mas é melhor deixarmos por questão de segurança
-    @Column(name = "dataCurtida", nullable = false)
+    @Column(name = "data_curtida")
+    @CreationTimestamp // Automaticamente define a data atual
     private LocalDateTime dataCurtida;
-
-    @PrePersist
-    protected void onCreate() {
-        this.dataCurtida = LocalDateTime.now();
-    }
 
     // Construtor customizado para facilitar a criação
     public Curtida(Usuario usuario, Post post) {

@@ -4,11 +4,13 @@ import com.gatorion.backend.dto.*;
 import com.gatorion.backend.model.Usuario;
 import com.gatorion.backend.service.UsuarioService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -18,23 +20,10 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/usuarios")
-// Define o caminho base para todos os endpoints deste controlador. Ex: http://localhost:8080/usuarios
-@CrossOrigin(origins = "*")
-// Permite requisições de qualquer origem (CORS). Ideal para desenvolvimento, mas em produção, deve ser restrito a domínios específicos por segurança.
 public class UsuarioController {
 
-    // Declaração final para garantir que o serviço seja injetado no construtor e não possa ser alterado depois.
-    private final UsuarioService usuarioService;
-
-    /**
-     * Construtor para injeção de dependências do UsuarioService.
-     * O Spring Framework injetará automaticamente a instância de UsuarioService.
-     *
-     * @param usuarioService O serviço que contém a lógica de negócio para usuários.
-     */
-    public UsuarioController(UsuarioService usuarioService) {
-        this.usuarioService = usuarioService;
-    }
+    @Autowired
+    private UsuarioService usuarioService;
 
     /**
      * Endpoint para listar todos os usuários.
@@ -67,24 +56,25 @@ public class UsuarioController {
      * @return ResponseEntity contendo o DTO de resposta do novo usuário e status HTTP 201 (CREATED).
      */
     @PostMapping("/cadastrar")
-    public ResponseEntity<UsuarioResponseDTO> cadastrar(@RequestBody @Valid UsuarioRequestDTO dto) {
-        // 1. Cria uma nova instância da entidade Usuario a partir dos dados do DTO.
-        Usuario usuarioParaSalvar = new Usuario();
-        usuarioParaSalvar.setNome(dto.getNome());
-        usuarioParaSalvar.setNomeUsuario(dto.getNomeUsuario());
-        usuarioParaSalvar.setEmail(dto.getEmail());
-        usuarioParaSalvar.setSenha(dto.getSenha());
-        usuarioParaSalvar.setXp(0L);
-        usuarioParaSalvar.setNivel(1);
-
-        // 2. Chama o serviço para salvar o novo usuário no banco de dados (a senha será criptografada lá).
-        Usuario novoUsuarioSalvo = usuarioService.salvarUsuario(usuarioParaSalvar);
-
-        // 3. Cria um DTO de resposta para enviar de volta ao cliente, omitindo a senha.
-        UsuarioResponseDTO response = new UsuarioResponseDTO(novoUsuarioSalvo.getId(), novoUsuarioSalvo.getNome(), novoUsuarioSalvo.getEmail(), novoUsuarioSalvo.getNomeUsuario(), novoUsuarioSalvo.getXp(), novoUsuarioSalvo.getNivel());
-
-        // 4. Retorna o DTO de resposta com o status HTTP 201 (CREATED), indicando que o recurso foi criado com sucesso.
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    public ResponseEntity<?> cadastrarUsuario(@RequestBody @Valid Usuario usuario) {
+        try {
+            Usuario usuarioSalvo = usuarioService.salvarUsuario(usuario);
+            return ResponseEntity.ok().body(Map.of(
+                "success", true,
+                "message", "Usuário cadastrado com sucesso!",
+                "usuario", Map.of(
+                    "id", usuarioSalvo.getId(),
+                    "nome", usuarioSalvo.getNome(),
+                    "email", usuarioSalvo.getEmail(),
+                    "nomeUsuario", usuarioSalvo.getNomeUsuario()
+                )
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                "success", false,
+                "message", "Erro ao cadastrar usuário: " + e.getMessage()
+            ));
+        }
     }
 
     /**

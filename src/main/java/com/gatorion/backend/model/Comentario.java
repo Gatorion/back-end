@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,10 +41,7 @@ public class Comentario {
     @OneToMany(mappedBy = "comentarioPai")
     private List<Comentario> respostas;
 
-    private LocalDateTime dataCriacao;
-
-    @PrePersist
-    protected void onCreate() {
-        this.dataCriacao = LocalDateTime.now();
-    }
+    @Column(name = "data_criacao") // ← Mudado de data_comentario
+    @CreationTimestamp // Automaticamente define a data atual
+    private LocalDateTime dataCriacao; // ← Mudado de dataComentario
 }

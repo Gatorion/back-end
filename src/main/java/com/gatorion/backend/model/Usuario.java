@@ -2,6 +2,7 @@ package com.gatorion.backend.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.proxy.HibernateProxy;
@@ -35,13 +36,9 @@ public class Usuario {
     @Column(name = "username", unique = true)
     private String nomeUsuario;
 
-    @Column(name = "data_criacao", nullable = false)
+    @Column(name = "data_criacao")
+    @CreationTimestamp // Automaticamente define a data atual
     private LocalDateTime dataCriacao;
-
-    @PrePersist
-    protected void onCreate() {
-        this.dataCriacao = LocalDateTime.now();
-    }
 
     @Column(name = "bio", columnDefinition = "TEXT")
     private String bio;
