@@ -60,7 +60,7 @@ public class AuthController {
                     usuario.getNome(),        // ← Nome completo "Rafael Rios"
                     usuario.getEmail(),       // ← Email "rafaelrios@gmail.com"
                     usuario.getNomeUsuario(), // ← Username "r.rios"
-                    usuario.getXp() != null ? usuario.getXp() : 0,     // ✅ XP com fallback
+                    usuario.getXp() != 0 ? usuario.getXp() : 0,     // ✅ XP com fallback
                     usuario.getNivel() != 0 ? usuario.getNivel() : 1 // ✅ Nível com fallback
             );
 

@@ -55,7 +55,8 @@ public class Usuario {
     @Column(name = "endereco", nullable = true)
     private String endereco;
 
-    private Long xp;
+    private Long xp = 0L;
+
     @Column(name = "nivel")
     private int nivel = 1;
 

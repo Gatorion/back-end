@@ -30,4 +30,6 @@ public class UsuarioRequestDTO {
     @NotBlank(message = "Senha é obrigatória")
     @Size(min = 8, message = "A senha deve ter pelo menos 8 caracteres")
     private String senha;
+
+    private long xp = 0; // Inicializa com 0 XP
 }
